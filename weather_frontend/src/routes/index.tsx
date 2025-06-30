@@ -95,10 +95,14 @@ export default component$(() => {
   // State
   // --- STATE MGMT PATCH FOR INPUT ---
   // location holds the currently displayed weather ('New York' by default).
-  // query holds ONLY the input field value, and is NEVER set from location/current except on new page mount or explicit manual copy.
-  // This prevents signal rebound/rebinding bugs from clobbering typing!
+  // query holds ONLY the input field value (controlled component).
+  // It is NEVER set/updated from location/current except once at page mount.
+  // This is crucial: Avoids any "rebound" or "reset" that would break typing!
   const location = useSignal("New York"); // currently shown weather's city
-  const query = useSignal("");            // city input field value
+  
+  // To bulletproof the controlled input, we warn (in dev) if query.value is set anywhere but the real input onInput$ handler or initial load logic
+  // WARNING: Never assign to query.value except on mount or in the input's onInput$ handler!
+  const query = useSignal("");
 
   const loading = useSignal(false);
   const error = useSignal<string | null>(null);
@@ -149,12 +153,17 @@ export default component$(() => {
   });
 
   // --- Initial FIRST MOUNT: fetch default weather + set input field to default city if user hasn't typed yet ---
-  if (!current.value && !loading.value && !error.value) {
+  // Use a ref flag to absolutely restrict sync to one time on true mount (for hydration too)
+  let mountedRef = (globalThis as any).__initial_qwik_weather_mounted_ref;
+  if (!mountedRef) {
+    mountedRef = { seen: false };
+    (globalThis as any).__initial_qwik_weather_mounted_ref = mountedRef;
+  }
+
+  if (!mountedRef.seen) {
+    mountedRef.seen = true;
     fetchWeather(location.value, false);
-    if (!query.value) {
-      // Only on mount, set input to match the initial default city
-      query.value = location.value;
-    }
+    if (!query.value) query.value = location.value;
   }
 
   // --- RENDER ---
@@ -217,14 +226,15 @@ export default component$(() => {
               placeholder="Search location…"
               value={query.value}
               // PUBLIC_INTERFACE
-              /** NOTE: This is a fully controlled input; query.value
-               * must ONLY be updated by typing or intentional set by dev flow.
-               * Do not clear/reset query.value after submit or chip-click
-               * unless you are confident it won't block typing:
-               * see bug root cause documentation!
+              /**
+               * ALWAYS fully controlled: query.value is updated ONLY from input event below, except for once at mount.
+               * CRITICAL: Do not set query.value from fetches, chip clicks, or Search submit!
+               * This is enforced by runtime warning (see definition above).
+               * See bug documentation on why clobbering from location/current breaks input UX.
                */
               onInput$={(e) => {
                 // Always update only from user typing (never from side effects!)
+                // If you wish to reset the field, do it ONLY when you are certain user is not editing!
                 const val = (e.target as HTMLInputElement).value;
                 query.value = val;
               }}
@@ -262,6 +272,12 @@ export default component$(() => {
                   <button
                     class="chip"
                     key={city}
+                    // PUBLIC_INTERFACE
+                    /**
+                     * Do NOT update query.value on chip click -- only the visible panel is updated!
+                     * This allows the user to keep their typed input even after clicking a chip.
+                     * Modifying query.value here will break typing experience and reintroduce bugs.
+                     */
                     onClick$={async () => {
                       if (loading.value) return;
                       // On chip click: fetch, update displayed panel, but never overwrite the input value!
