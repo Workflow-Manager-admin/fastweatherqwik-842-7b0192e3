@@ -2,9 +2,8 @@
 > dev
 > vite --mode ssr --port 3000 --host 0.0.0.0
 
-(!) Could not auto-determine entry point from rollupOptions or html files and there are no explicit optimizeDeps.include patterns. Skipping dependency pre-bundling.
 
-  VITE v5.3.5  ready in 1661 ms
+  VITE v5.3.5  ready in 1833 ms
 
   ➜  Local:   http://localhost:3000/
   ➜  Network: http://172.17.0.2:3000/
@@ -20,6 +19,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
     li: [],
     '$tasks$': null,
     '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
       [SignalImpl],
       [SignalImpl],
       [SignalImpl],
@@ -29,8 +30,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
       [SignalImpl]
     ],
     '$slots$': [],
-    '$scopeIds$': null,
-    '$appendStyles$': null,
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
     '$props$': { [Symbol(IMMUTABLE)]: {} },
     '$vdom$': null,
     '$componentQrl$': [AsyncFunction: qrl2] {
@@ -102,6 +103,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
     li: [],
     '$tasks$': null,
     '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
       [SignalImpl],
       [SignalImpl],
       [SignalImpl],
@@ -111,8 +114,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
       [SignalImpl]
     ],
     '$slots$': [],
-    '$scopeIds$': null,
-    '$appendStyles$': null,
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
     '$props$': { [Symbol(IMMUTABLE)]: {} },
     '$vdom$': null,
     '$componentQrl$': [AsyncFunction: qrl2] {
@@ -184,6 +187,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
     li: [],
     '$tasks$': null,
     '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
       [SignalImpl],
       [SignalImpl],
       [SignalImpl],
@@ -193,8 +198,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
       [SignalImpl]
     ],
     '$slots$': [],
-    '$scopeIds$': null,
-    '$appendStyles$': null,
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
     '$props$': { [Symbol(IMMUTABLE)]: {} },
     '$vdom$': null,
     '$componentQrl$': [AsyncFunction: qrl2] {
@@ -266,6 +271,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
     li: [],
     '$tasks$': null,
     '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
       [SignalImpl],
       [SignalImpl],
       [SignalImpl],
@@ -275,8 +282,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
       [SignalImpl]
     ],
     '$slots$': [],
-    '$scopeIds$': null,
-    '$appendStyles$': null,
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
     '$props$': { [Symbol(IMMUTABLE)]: {} },
     '$vdom$': null,
     '$componentQrl$': [AsyncFunction: qrl2] {
@@ -348,6 +355,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
     li: [],
     '$tasks$': null,
     '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
       [SignalImpl],
       [SignalImpl],
       [SignalImpl],
@@ -357,8 +366,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
       [SignalImpl]
     ],
     '$slots$': [],
-    '$scopeIds$': null,
-    '$appendStyles$': null,
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
     '$props$': { [Symbol(IMMUTABLE)]: {} },
     '$vdom$': null,
     '$componentQrl$': [AsyncFunction: qrl2] {
@@ -430,6 +439,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
     li: [],
     '$tasks$': null,
     '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
       [SignalImpl],
       [SignalImpl],
       [SignalImpl],
@@ -439,8 +450,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
       [SignalImpl]
     ],
     '$slots$': [],
-    '$scopeIds$': null,
-    '$appendStyles$': null,
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
     '$props$': { [Symbol(IMMUTABLE)]: {} },
     '$vdom$': null,
     '$componentQrl$': [AsyncFunction: qrl2] {
@@ -512,6 +523,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
     li: [],
     '$tasks$': null,
     '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
       [SignalImpl],
       [SignalImpl],
       [SignalImpl],
@@ -521,8 +534,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
       [SignalImpl]
     ],
     '$slots$': [],
-    '$scopeIds$': null,
-    '$appendStyles$': null,
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
     '$props$': { [Symbol(IMMUTABLE)]: {} },
     '$vdom$': null,
     '$componentQrl$': [AsyncFunction: qrl2] {
@@ -594,6 +607,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
     li: [],
     '$tasks$': null,
     '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
       [SignalImpl],
       [SignalImpl],
       [SignalImpl],
@@ -603,8 +618,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
       [SignalImpl]
     ],
     '$slots$': [],
-    '$scopeIds$': null,
-    '$appendStyles$': null,
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
     '$props$': { [Symbol(IMMUTABLE)]: {} },
     '$vdom$': null,
     '$componentQrl$': [AsyncFunction: qrl2] {
@@ -676,6 +691,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
     li: [],
     '$tasks$': null,
     '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
       [SignalImpl],
       [SignalImpl],
       [SignalImpl],
@@ -685,8 +702,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
       [SignalImpl]
     ],
     '$slots$': [],
-    '$scopeIds$': null,
-    '$appendStyles$': null,
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
     '$props$': { [Symbol(IMMUTABLE)]: {} },
     '$vdom$': null,
     '$componentQrl$': [AsyncFunction: qrl2] {
@@ -758,6 +775,8 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
     li: [],
     '$tasks$': null,
     '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
       [SignalImpl],
       [SignalImpl],
       [SignalImpl],
@@ -767,8 +786,428 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
       [SignalImpl]
     ],
     '$slots$': [],
-    '$scopeIds$': null,
-    '$appendStyles$': null,
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
+    '$props$': { [Symbol(IMMUTABLE)]: {} },
+    '$vdom$': null,
+    '$componentQrl$': [AsyncFunction: qrl2] {
+      getSymbol: [Function: getSymbol],
+      getHash: [Function: getHash],
+      getCaptured: [Function: getCaptured],
+      resolve: [AsyncFunction: resolve],
+      '$resolveLazy$': [Function: resolveLazy],
+      '$setContainer$': [Function: setContainer],
+      '$chunk$': null,
+      '$symbol$': 'routes_component_xYL1qOwPyDI',
+      '$refSymbol$': null,
+      '$hash$': 'xYL1qOwPyDI',
+      getFn: [Function: invokeFn],
+      '$capture$': null,
+      '$captureRef$': [],
+      dev: [Object],
+      resolved: [Function: routes_component_xYL1qOwPyDI]
+    },
+    '$contexts$': null,
+    '$dynamicSlots$': null,
+    '$parentCtx$': {
+      '$flags$': 0,
+      '$id$': '',
+      '$element$': [MockElement],
+      '$refMap$': [],
+      li: [],
+      '$tasks$': null,
+      '$seq$': null,
+      '$slots$': null,
+      '$scopeIds$': null,
+      '$appendStyles$': null,
+      '$props$': null,
+      '$vdom$': null,
+      '$componentQrl$': null,
+      '$contexts$': null,
+      '$dynamicSlots$': null,
+      '$parentCtx$': [Object],
+      '$realParentCtx$': undefined
+    },
+    '$realParentCtx$': {
+      '$flags$': 12,
+      '$id$': '4',
+      '$element$': [MockElement],
+      '$refMap$': [],
+      li: [],
+      '$tasks$': null,
+      '$seq$': [Array],
+      '$slots$': [],
+      '$scopeIds$': null,
+      '$appendStyles$': null,
+      '$props$': {},
+      '$vdom$': null,
+      '$componentQrl$': [AsyncFunction],
+      '$contexts$': null,
+      '$dynamicSlots$': [Array],
+      '$parentCtx$': [Object],
+      '$realParentCtx$': [Object]
+    }
+  }
+}
+QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1> MockElement {
+  nodeType: 111,
+  _qc_: {
+    '$flags$': 4,
+    '$id$': '',
+    '$element$': [Circular *1],
+    '$refMap$': [],
+    li: [],
+    '$tasks$': null,
+    '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl]
+    ],
+    '$slots$': [],
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
+    '$props$': { [Symbol(IMMUTABLE)]: {} },
+    '$vdom$': null,
+    '$componentQrl$': [AsyncFunction: qrl2] {
+      getSymbol: [Function: getSymbol],
+      getHash: [Function: getHash],
+      getCaptured: [Function: getCaptured],
+      resolve: [AsyncFunction: resolve],
+      '$resolveLazy$': [Function: resolveLazy],
+      '$setContainer$': [Function: setContainer],
+      '$chunk$': null,
+      '$symbol$': 'routes_component_xYL1qOwPyDI',
+      '$refSymbol$': null,
+      '$hash$': 'xYL1qOwPyDI',
+      getFn: [Function: invokeFn],
+      '$capture$': null,
+      '$captureRef$': [],
+      dev: [Object],
+      resolved: [Function: routes_component_xYL1qOwPyDI]
+    },
+    '$contexts$': null,
+    '$dynamicSlots$': null,
+    '$parentCtx$': {
+      '$flags$': 0,
+      '$id$': '',
+      '$element$': [MockElement],
+      '$refMap$': [],
+      li: [],
+      '$tasks$': null,
+      '$seq$': null,
+      '$slots$': null,
+      '$scopeIds$': null,
+      '$appendStyles$': null,
+      '$props$': null,
+      '$vdom$': null,
+      '$componentQrl$': null,
+      '$contexts$': null,
+      '$dynamicSlots$': null,
+      '$parentCtx$': [Object],
+      '$realParentCtx$': undefined
+    },
+    '$realParentCtx$': {
+      '$flags$': 12,
+      '$id$': '4',
+      '$element$': [MockElement],
+      '$refMap$': [],
+      li: [],
+      '$tasks$': null,
+      '$seq$': [Array],
+      '$slots$': [],
+      '$scopeIds$': null,
+      '$appendStyles$': null,
+      '$props$': {},
+      '$vdom$': null,
+      '$componentQrl$': [AsyncFunction],
+      '$contexts$': null,
+      '$dynamicSlots$': [Array],
+      '$parentCtx$': [Object],
+      '$realParentCtx$': [Object]
+    }
+  }
+}
+QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1> MockElement {
+  nodeType: 111,
+  _qc_: {
+    '$flags$': 5,
+    '$id$': '',
+    '$element$': [Circular *1],
+    '$refMap$': [],
+    li: [],
+    '$tasks$': null,
+    '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl]
+    ],
+    '$slots$': [],
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
+    '$props$': { [Symbol(IMMUTABLE)]: {} },
+    '$vdom$': null,
+    '$componentQrl$': [AsyncFunction: qrl2] {
+      getSymbol: [Function: getSymbol],
+      getHash: [Function: getHash],
+      getCaptured: [Function: getCaptured],
+      resolve: [AsyncFunction: resolve],
+      '$resolveLazy$': [Function: resolveLazy],
+      '$setContainer$': [Function: setContainer],
+      '$chunk$': null,
+      '$symbol$': 'routes_component_xYL1qOwPyDI',
+      '$refSymbol$': null,
+      '$hash$': 'xYL1qOwPyDI',
+      getFn: [Function: invokeFn],
+      '$capture$': null,
+      '$captureRef$': [],
+      dev: [Object],
+      resolved: [Function: routes_component_xYL1qOwPyDI]
+    },
+    '$contexts$': null,
+    '$dynamicSlots$': null,
+    '$parentCtx$': {
+      '$flags$': 0,
+      '$id$': '',
+      '$element$': [MockElement],
+      '$refMap$': [],
+      li: [],
+      '$tasks$': null,
+      '$seq$': null,
+      '$slots$': null,
+      '$scopeIds$': null,
+      '$appendStyles$': null,
+      '$props$': null,
+      '$vdom$': null,
+      '$componentQrl$': null,
+      '$contexts$': null,
+      '$dynamicSlots$': null,
+      '$parentCtx$': [Object],
+      '$realParentCtx$': undefined
+    },
+    '$realParentCtx$': {
+      '$flags$': 12,
+      '$id$': '4',
+      '$element$': [MockElement],
+      '$refMap$': [],
+      li: [],
+      '$tasks$': null,
+      '$seq$': [Array],
+      '$slots$': [],
+      '$scopeIds$': null,
+      '$appendStyles$': null,
+      '$props$': {},
+      '$vdom$': null,
+      '$componentQrl$': [AsyncFunction],
+      '$contexts$': null,
+      '$dynamicSlots$': [Array],
+      '$parentCtx$': [Object],
+      '$realParentCtx$': [Object]
+    }
+  }
+}
+QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1> MockElement {
+  nodeType: 111,
+  _qc_: {
+    '$flags$': 5,
+    '$id$': '',
+    '$element$': [Circular *1],
+    '$refMap$': [],
+    li: [],
+    '$tasks$': null,
+    '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl]
+    ],
+    '$slots$': [],
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
+    '$props$': { [Symbol(IMMUTABLE)]: {} },
+    '$vdom$': null,
+    '$componentQrl$': [AsyncFunction: qrl2] {
+      getSymbol: [Function: getSymbol],
+      getHash: [Function: getHash],
+      getCaptured: [Function: getCaptured],
+      resolve: [AsyncFunction: resolve],
+      '$resolveLazy$': [Function: resolveLazy],
+      '$setContainer$': [Function: setContainer],
+      '$chunk$': null,
+      '$symbol$': 'routes_component_xYL1qOwPyDI',
+      '$refSymbol$': null,
+      '$hash$': 'xYL1qOwPyDI',
+      getFn: [Function: invokeFn],
+      '$capture$': null,
+      '$captureRef$': [],
+      dev: [Object],
+      resolved: [Function: routes_component_xYL1qOwPyDI]
+    },
+    '$contexts$': null,
+    '$dynamicSlots$': null,
+    '$parentCtx$': {
+      '$flags$': 0,
+      '$id$': '',
+      '$element$': [MockElement],
+      '$refMap$': [],
+      li: [],
+      '$tasks$': null,
+      '$seq$': null,
+      '$slots$': null,
+      '$scopeIds$': null,
+      '$appendStyles$': null,
+      '$props$': null,
+      '$vdom$': null,
+      '$componentQrl$': null,
+      '$contexts$': null,
+      '$dynamicSlots$': null,
+      '$parentCtx$': [Object],
+      '$realParentCtx$': undefined
+    },
+    '$realParentCtx$': {
+      '$flags$': 12,
+      '$id$': '4',
+      '$element$': [MockElement],
+      '$refMap$': [],
+      li: [],
+      '$tasks$': null,
+      '$seq$': [Array],
+      '$slots$': [],
+      '$scopeIds$': null,
+      '$appendStyles$': null,
+      '$props$': {},
+      '$vdom$': null,
+      '$componentQrl$': [AsyncFunction],
+      '$contexts$': null,
+      '$dynamicSlots$': [Array],
+      '$parentCtx$': [Object],
+      '$realParentCtx$': [Object]
+    }
+  }
+}
+QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1> MockElement {
+  nodeType: 111,
+  _qc_: {
+    '$flags$': 5,
+    '$id$': '',
+    '$element$': [Circular *1],
+    '$refMap$': [],
+    li: [],
+    '$tasks$': null,
+    '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl]
+    ],
+    '$slots$': [],
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
+    '$props$': { [Symbol(IMMUTABLE)]: {} },
+    '$vdom$': null,
+    '$componentQrl$': [AsyncFunction: qrl2] {
+      getSymbol: [Function: getSymbol],
+      getHash: [Function: getHash],
+      getCaptured: [Function: getCaptured],
+      resolve: [AsyncFunction: resolve],
+      '$resolveLazy$': [Function: resolveLazy],
+      '$setContainer$': [Function: setContainer],
+      '$chunk$': null,
+      '$symbol$': 'routes_component_xYL1qOwPyDI',
+      '$refSymbol$': null,
+      '$hash$': 'xYL1qOwPyDI',
+      getFn: [Function: invokeFn],
+      '$capture$': null,
+      '$captureRef$': [],
+      dev: [Object],
+      resolved: [Function: routes_component_xYL1qOwPyDI]
+    },
+    '$contexts$': null,
+    '$dynamicSlots$': null,
+    '$parentCtx$': {
+      '$flags$': 0,
+      '$id$': '',
+      '$element$': [MockElement],
+      '$refMap$': [],
+      li: [],
+      '$tasks$': null,
+      '$seq$': null,
+      '$slots$': null,
+      '$scopeIds$': null,
+      '$appendStyles$': null,
+      '$props$': null,
+      '$vdom$': null,
+      '$componentQrl$': null,
+      '$contexts$': null,
+      '$dynamicSlots$': null,
+      '$parentCtx$': [Object],
+      '$realParentCtx$': undefined
+    },
+    '$realParentCtx$': {
+      '$flags$': 12,
+      '$id$': '4',
+      '$element$': [MockElement],
+      '$refMap$': [],
+      li: [],
+      '$tasks$': null,
+      '$seq$': [Array],
+      '$slots$': [],
+      '$scopeIds$': null,
+      '$appendStyles$': null,
+      '$props$': {},
+      '$vdom$': null,
+      '$componentQrl$': [AsyncFunction],
+      '$contexts$': null,
+      '$dynamicSlots$': [Array],
+      '$parentCtx$': [Object],
+      '$realParentCtx$': [Object]
+    }
+  }
+}
+QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1> MockElement {
+  nodeType: 111,
+  _qc_: {
+    '$flags$': 5,
+    '$id$': '',
+    '$element$': [Circular *1],
+    '$refMap$': [],
+    li: [],
+    '$tasks$': null,
+    '$seq$': [
+      'crtkd5-0',
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl],
+      [SignalImpl]
+    ],
+    '$slots$': [],
+    '$scopeIds$': [ '⭐️crtkd5-0' ],
+    '$appendStyles$': [ [Object] ],
     '$props$': { [Symbol(IMMUTABLE)]: {} },
     '$vdom$': null,
     '$componentQrl$': [AsyncFunction: qrl2] {

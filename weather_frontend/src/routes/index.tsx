@@ -2,8 +2,21 @@ import { component$, useSignal, $, useStylesScoped$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import "./styles.css";
 
-// Constants
-const ENDPOINT_BASE = "/api/weather";
+/**
+ * Qwik Homepage: Weather Dashboard
+ * - Connects to FastAPI backend via /api/weather?q=city for live current, hourly, and daily forecasts.
+ * - Uses Qwik component async logic and fetch patterns.
+ * - Respects proxying via /api/weather, which is handled in local dev by Vite and in deploy by the platform.
+ * - Handles errors and loading states.
+ * - Ensures frontend works for both local and deployed environments.
+ */
+
+// PUBLIC_INTERFACE
+const ENDPOINT_BASE =
+  typeof window !== "undefined"
+    ? "/api/weather"
+    : "/api/weather"; // For SSR-safe deployment; Vite proxy handles this in dev
+
 const MAX_RECENTS = 6;
 const COLORS = {
   primary: "#1976d2",
