@@ -187,7 +187,8 @@ export default component$(() => {
               if (!query.value.trim()) return;
               await fetchWeather(query.value.trim());
               location.value = query.value.trim();
-              query.value = "";
+              // Do not forcibly clear input, let the user continue editing if desired
+              // query.value = "";
             }}
           >
             <input
@@ -207,7 +208,12 @@ export default component$(() => {
               placeholder="Search location…"
               value={query.value}
               // PUBLIC_INTERFACE
-              /** This ensures the user can type freely. */
+              /** NOTE: This is a fully controlled input; query.value
+               * must ONLY be updated by typing or intentional set by dev flow.
+               * Do not clear/reset query.value after submit or chip-click
+               * unless you are confident it won't block typing:
+               * see bug root cause documentation!
+               */
               onInput$={(e) => {
                 const val = (e.target as HTMLInputElement).value;
                 query.value = val;
@@ -248,7 +254,7 @@ export default component$(() => {
                     key={city}
                     onClick$={async () => {
                       if (loading.value) return;
-                      query.value = "";
+                      // Do not forcibly clear query here. Let the user continue type or edit.
                       await fetchWeather(city);
                       location.value = city;
                     }}
