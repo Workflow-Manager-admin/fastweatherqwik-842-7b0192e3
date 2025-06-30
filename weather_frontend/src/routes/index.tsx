@@ -93,8 +93,13 @@ export default component$(() => {
     @media (max-width: 460px) { .chip { font-size: 0.85em; } }
   `);
   // State
-  const location = useSignal("New York");
-  const query = useSignal("");
+  // --- STATE MGMT PATCH FOR INPUT ---
+  // location holds the currently displayed weather ('New York' by default).
+  // query holds ONLY the input field value, and is NEVER set from location/current except on new page mount or explicit manual copy.
+  // This prevents signal rebound/rebinding bugs from clobbering typing!
+  const location = useSignal("New York"); // currently shown weather's city
+  const query = useSignal("");            // city input field value
+
   const loading = useSignal(false);
   const error = useSignal<string | null>(null);
   const current = useSignal<Weather | null>(null);
@@ -143,9 +148,13 @@ export default component$(() => {
     }
   });
 
-  // Fetch initial (default) city on mount
+  // --- Initial FIRST MOUNT: fetch default weather + set input field to default city if user hasn't typed yet ---
   if (!current.value && !loading.value && !error.value) {
     fetchWeather(location.value, false);
+    if (!query.value) {
+      // Only on mount, set input to match the initial default city
+      query.value = location.value;
+    }
   }
 
   // --- RENDER ---
@@ -186,9 +195,9 @@ export default component$(() => {
               e.preventDefault();
               if (!query.value.trim()) return;
               await fetchWeather(query.value.trim());
-              location.value = query.value.trim();
-              // Do not forcibly clear input, let the user continue editing if desired
-              // query.value = "";
+              location.value = query.value.trim(); // ONLY update displayed city, do not touch query.value
+              // (Do not forcibly clear input; let user keep editing if desired)
+              // query.value = ""; // <-- do *not* set/clear; this caused controlled input bugs!
             }}
           >
             <input
@@ -215,6 +224,7 @@ export default component$(() => {
                * see bug root cause documentation!
                */
               onInput$={(e) => {
+                // Always update only from user typing (never from side effects!)
                 const val = (e.target as HTMLInputElement).value;
                 query.value = val;
               }}
@@ -254,9 +264,10 @@ export default component$(() => {
                     key={city}
                     onClick$={async () => {
                       if (loading.value) return;
-                      // Do not forcibly clear query here. Let the user continue type or edit.
+                      // On chip click: fetch, update displayed panel, but never overwrite the input value!
                       await fetchWeather(city);
                       location.value = city;
+                      // Do NOT touch query.value here! (User may be typing)
                     }}
                     aria-label={`Search ${city}`}
                   >
