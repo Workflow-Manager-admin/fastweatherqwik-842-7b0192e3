@@ -46,6 +46,12 @@ export default defineConfig(({ command, mode }): UserConfig => {
     //       }
     //     : undefined,
 
+    /**
+     * Local Development Proxy
+     * - Proxies /api/weather* requests to the backend FastAPI server.
+     * - Set WEATHER_BACKEND_URL in your .env for cloud/dev use, else defaults to localhost:3001.
+     * - Example: /api/weather/current -> http://localhost:3001/weather/current
+     */
     server: {
       headers: {
         // Don't cache the server response in dev mode
@@ -56,9 +62,18 @@ export default defineConfig(({ command, mode }): UserConfig => {
       // allowedHosts removed (invalid property)
       proxy: {
         '/api/weather': {
-          // Route API requests in dev to backend container, use env for cloud/production
+          /**
+           * Target backend API (local default or from WEATHER_BACKEND_URL)
+           * - Set WEATHER_BACKEND_URL in your environment or .env file for cloud/dev overrides.
+           */
           target: process.env.WEATHER_BACKEND_URL || 'http://localhost:3001',
           changeOrigin: true,
+          /**
+           * Rewrite /api/weather to /weather so that:
+           * - /api/weather            -> /weather (backend endpoint)
+           * - /api/weather/current    -> /weather/current (backend endpoint)
+           * - /api/weather/forecast   -> /weather/forecast (backend endpoint)
+           */
           rewrite: path => path.replace(/^\/api\/weather/, '/weather'),
         }
       }
