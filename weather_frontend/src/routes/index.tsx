@@ -28,7 +28,7 @@ import "./styles.css";
 
 /**
  * Qwik Homepage: Weather Dashboard
- * - Connects to FastAPI backend via /api/weather?q=city for live current, hourly, and daily forecasts.
+ * - Connects to FastAPI backend via /api/weather/current?city=city for live current, hourly, and daily forecasts.
  * - Uses Qwik component async logic and fetch patterns.
  * - Respects proxying via /api/weather, which is handled in local dev by Vite and in deploy by the platform.
  * - Handles errors and loading states.
@@ -154,7 +154,11 @@ export default component$(() => {
   // PUBLIC_INTERFACE
   /**
    * Fetch weather data from the backend and handle all possible response types.
-   * Shows a user-facing error if backend is unreachable, returns non-JSON, or backend returns error HTML, text, or incomplete data.
+   * - Uses /api/weather/current?city=CityName as backend expects.
+   * - Surfaces backend errors directly (like "City not found", "API key error", etc).
+   * - Only shows "Location not found" if explicitly from backend; all errors display clear, friendly, actionable text.
+   * - Defensive: Validates JSON structure before using, rejects HTML/text/gibberish as parse errors.
+   * - Notes: The endpoint and parameter name must match backend - here assumed to be /api/weather/current?city=...
    */
   const fetchWeather = $(async (loc: string, addToRecents = true) => {
     loading.value = true;
@@ -163,87 +167,114 @@ export default component$(() => {
     hourly.value = [];
     daily.value = [];
     try {
-      const res = await fetch(`${ENDPOINT_BASE}?q=${encodeURIComponent(loc)}`);
-      // Check for HTTP errors
+      // NOTE: The backend expects /weather/current?city=CityName after Vite proxy /api/weather/current
+      // Use the correct endpoint per fastapi backend spec
+      const url = `${ENDPOINT_BASE}/current?city=${encodeURIComponent(loc)}`;
+
+      const res = await fetch(url);
+
+      // Handle HTTP-level errors (404, 500, etc)
       if (!res.ok) {
-        // Try to get JSON with detail
         const contentType = res.headers.get("content-type") || "";
-        let backendErrDetail = "";
-        // Try best effort: parse {"detail": "..."} or similar JSON if backend sent
+        let backendDetail: string | undefined = undefined;
+
+        // Try structured JSON: {"detail": "..."} or {"message": "..."}
         if (contentType.includes("application/json")) {
           try {
-            const errorJson = await res.json();
-            if (errorJson.detail) {
-              backendErrDetail = errorJson.detail;
-              throw new Error(backendErrDetail);
-            } else if (typeof errorJson === "string") {
-              backendErrDetail = errorJson;
-              throw new Error(backendErrDetail);
+            const errJson = await res.json();
+            // Conventional FastAPI error format or OpenWeather wrapper
+            if (errJson.detail) {
+              backendDetail = errJson.detail;
+            } else if (errJson.message) {
+              backendDetail = errJson.message;
+            } else if (typeof errJson === "string") {
+              backendDetail = errJson;
             }
-          } catch (jsonErr) {
-            // fallback to text below
+          } catch (e) {
+            /* Do nothing, fallback to text below */
           }
         }
-        // Fallback: Try to parse any short text as a user-facing message
-        let text = "";
-        try {
-          text = await res.text();
-        } catch {
-          // ignore
+
+        // Try text fallback if available and short (likely a plain error message)
+        if (!backendDetail) {
+          try {
+            const errText = await res.text();
+            // Only show if not possibly HTML
+            if (errText && !errText.trim().startsWith("<") && errText.length < 256) {
+              backendDetail = errText.trim();
+            }
+          } catch {/* ignore */}
         }
-        if (text && !text.startsWith("{") && text.length < 256) {
-          throw new Error(text.trim());
+
+        // Only show "Location not found" if that is what the backend actually returned!
+        if (backendDetail) {
+          throw new Error(backendDetail);
         }
-        // Still nothing? Use status text or generic
-        throw new Error(res.statusText || "Location not found or backend error.");
+        // Otherwise show status text or fallback
+        throw new Error(res.statusText || "An error occurred fetching weather data.");
       }
-      // At this point, 'ok' is true. Try to parse as JSON, but guard against non-JSON payload
+
+      // HTTP 200; parse expected JSON (may still be an error masquerading as JSON)
       let data: any = undefined;
-      let rawText: string | undefined = undefined;
+      let textRaw: string | undefined = undefined;
       try {
-        // Peek at the Content-Type in a case-insensitive way, fallback to sniff
         const ct = res.headers.get("content-type") || "";
         if (ct.includes("application/json")) {
           data = await res.json();
         } else {
-          // Try to parse as json, but if it fails, give a descriptive error.
-          rawText = await res.text();
+          // Parse as text, then try JSON parse, otherwise treat as error
+          textRaw = await res.text();
           try {
-            data = JSON.parse(rawText);
+            data = JSON.parse(textRaw);
           } catch (err) {
-            throw new Error(
-              rawText && rawText.trim().startsWith("Not a SSR")
-                ? "Backend server returned a SSR/HTML error. Please check backend deployment."
-                : "The backend did not return valid weather data (invalid JSON)."
-            );
+            if (textRaw && textRaw.trim().startsWith("Not a SSR")) {
+              throw new Error("Backend server returned an SSR/HTML error. Please check backend deployment.");
+            }
+            throw new Error("The backend did not return valid weather data (invalid JSON).");
           }
         }
       } catch (err: any) {
+        // Network loses, invalid JSON, SSR returned HTML, etc.
         if (
           err instanceof TypeError &&
           (err.message?.includes("NetworkError") || err.message?.includes("Failed to fetch"))
         ) {
           throw new Error("Network error: could not reach weather backend.");
         }
-        // Defensive: If backend exploded with HTML, text, or gibberish, surface it
         if (typeof err?.message === "string" && err.message.match(/Unexpected token/i)) {
-          throw new Error(
-            "The weather service did not return valid data (bad response format)."
-          );
+          throw new Error("The weather service did not return valid data (bad response format).");
         }
         throw err instanceof Error ? err : new Error("Could not parse weather data from server.");
       }
-      // Defensive: Ensure the structure is as expected.
+
+      // Check for backend error structure even if 200 (e.g. for well-formed OpenWeatherMap error wraps)
+      if (
+        data &&
+        (typeof data === "object") &&
+        (
+          (typeof data.detail === "string" && data.detail) ||
+          (typeof data.message === "string" && data.message)
+        )
+      ) {
+        // Very likely an error message delivered as JSON
+        throw new Error(data.detail || data.message);
+      }
+
+      // Validate success shape (must contain data.current, which itself must have numeric temp & city string)
       if (
         !data ||
         !data.current ||
         typeof data.current.temp !== "number" ||
         typeof data.current.city !== "string"
       ) {
-        throw new Error(
-          (data && data.detail) ? data.detail : "Weather data unavailable for this location. Please try another city."
-        );
+        // But surface a backend-provided explanation if present
+        if (data && ((typeof data.detail === "string" && data.detail) || (typeof data.message === "string" && data.message))) {
+          throw new Error(data.detail || data.message);
+        }
+        throw new Error("Weather data unavailable for this location. Please try another city.");
       }
+
+      // Normal success: extract weather data for display
       current.value = {
         temp: Math.round(data.current.temp),
         weather_main: data.current.weather_main,
@@ -256,6 +287,8 @@ export default component$(() => {
         city: data.current.city,
         country: data.current.country
       };
+
+      // These properties are optional; guard their existence
       hourly.value = Array.isArray(data.hourly)
         ? data.hourly.slice(0, 6).map((h: any) => ({
             dt: h.dt,
@@ -274,24 +307,27 @@ export default component$(() => {
             pop: d.pop,
           }))
         : [];
-      // Save recent
+
+      // Save to recents unless disabled
       if (addToRecents) {
         saveRecent(data.current.city);
         recents.value = loadRecents();
       }
     } catch (e: any) {
-      // Provide robust user-facing error details (network, JSON parse, backend message, etc.)
+      // Surface backend errors, network errors, parse errors, etc, as clear messages
       if (typeof e === "object" && e && "message" in e) {
         if (
           e.message === "Failed to fetch" ||
           e.message.includes("NetworkError")
         ) {
           error.value = "Network error: could not reach weather backend.";
-        } else if (
-          e.message.includes("SSR")
-        ) {
-          error.value =
-            "The backend server responded with an SSR error. (Not a server-side rendered request). Please check weather backend deployment and URL.";
+        } else if (e.message.includes("SSR")) {
+          error.value = "The backend server responded with an SSR error. (Not a server-side rendered request). Please check weather backend deployment and URL.";
+        } else if (/city not found/i.test(e.message) || /location not found/i.test(e.message)) {
+          // Only show Location/city not found message directly if backend surfaced it
+          error.value = "Sorry, that location was not found. Please check the city name and try again.";
+        } else if (/invalid api key/i.test(e.message)) {
+          error.value = "There was an issue with the weather API key. Please contact support or try again later.";
         } else {
           error.value = e.message;
         }
