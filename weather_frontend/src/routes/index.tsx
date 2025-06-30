@@ -119,23 +119,26 @@ export default component$(() => {
   // State
   // --- STATE MGMT PATCH FOR INPUT ---
   // location holds the currently displayed weather ('New York' by default).
-  // query holds ONLY the input field value (controlled component).
-  // It is NEVER set/updated from location/current except once at page mount.
-  // This is crucial: Avoids any "rebound" or "reset" that would break typing!
+  // query ONLY tracks the input field text as a pure controlled component.
+  // No function—fetchWeather, chip clicks, errors, search—should update query.value except initial mount or user typing.
   const location = useSignal("New York"); // currently shown weather's city
-  
+
   /**
    * Fully controlled city/location input state for the search box.
    * 
    * query.value should ONLY EVER be set by:
    *   (1) The onInput$ event handler for the input field (user keystrokes)
    *   (2) Once, on the very first mount (to location.value), if user has not typed
-   * All other changes (chip clicks, successful search, weather fetches, state changes in other parts)
-   * MUST NOT alter query.value; instead, they update only location/current, leaving the user's typing untouched.
-   * This guarantees that the input field behaves exactly as a controlled field in React/Qwik—user always controls text.
    * 
-   * DO NOT ASSIGN query.value in: chip clicks, fetchWeather, search results, recents, or any background updates!
-   * If you need to reset it (e.g. after page reload), touch only from known explicit user navigation or at mount.
+   * Never update query.value from:
+   *   - fetchWeather
+   *   - chip/city selection
+   *   - search submit results
+   *   - any error/loading panel
+   *   - other data changes
+   * 
+   * NEVER set query.value except as above to guarantee user can always type or edit input freely.
+   * NEVER mirror recents/chip result or successful search into query.value.
    */
   const query = useSignal("");
 
@@ -244,11 +247,11 @@ export default component$(() => {
             onSubmit$={async (e) => {
               e.preventDefault();
               if (!query.value.trim()) return;
-              // fetch weather for typed input, do NOT touch the input state (never clear/overwrite after submit!)
+              // Only fetch weather and set displayed panel. Never alter query.value—input stays as user typed.
               await fetchWeather(query.value.trim());
               location.value = query.value.trim(); // ONLY update displayed city, do not touch query.value
-              // (Do not forcibly clear input; let user keep editing if desired)
-              // query.value = ""; // <-- do *not* set/clear here; only allow field to be cleared by explicit user action or reload
+              // Never clear/reset the input here!
+              // query.value = ""; // <-- Do NOT set or clear! User must always control the value.
             }}
           >
             <input
@@ -269,15 +272,16 @@ export default component$(() => {
               value={query.value}
               // PUBLIC_INTERFACE
               /**
-               * Controlled input: the only permitted source for updating the search string is the USER (onInput$ below), or at mount (see above).
-               * No other event or fetch, nor any "current" or "location" state, should mutate query.value (input).
-               * This ensures a completely pure typing experience.
+               * Pure controlled input: query.value is set ONLY by:
+               *  (a) User typing (this onInput$ handler)
+               *  (b) Initial mount, if no user input
+               * Never set by fetches, chip clicks, search, errors, data changes, or elsewhere.
+               * To clear/reset input, user must do it manually (or via explicit navigation).
+               * This guarantees input is never stolen/reset—user can always freely type.
                */
               onInput$={(e) => {
-                // Only update "query.value" when the user types.
-                // If you need to programmatically reset/clear, ensure it's not during user interaction.
-                const val = (e.target as HTMLInputElement).value;
-                query.value = val;
+                // Only update when ACTUAL user input occurs.
+                query.value = (e.target as HTMLInputElement).value;
               }}
               aria-label="Enter city or location"
               disabled={loading.value}
@@ -315,16 +319,16 @@ export default component$(() => {
                     key={city}
                     // PUBLIC_INTERFACE
                     /**
-                     * Do NOT update query.value on chip click -- only the visible panel is updated!
-                     * This allows the user to keep their typed input even after clicking a chip.
-                     * Modifying query.value here will break typing experience and reintroduce bugs.
+                     * IMPORTANT: Never update query.value on chip click!
+                     * Only change displayed weather. The user may be typing something different: do not surprise them.
+                     * If you reset query.value here, you will break input UX.
                      */
                     onClick$={async () => {
                       if (loading.value) return;
-                      // On chip click: fetch, update displayed panel, but NEVER touch the input value!
+                      // On chip click: fetch, update display, but NEVER modify input or user's typing.
                       await fetchWeather(city);
                       location.value = city;
-                      // DO NOT assign to query.value here. This preserves uninterrupted user typing!
+                      // Never assign to query.value here. This preserves uninterrupted user typing.
                     }}
                     aria-label={`Search ${city}`}
                   >
