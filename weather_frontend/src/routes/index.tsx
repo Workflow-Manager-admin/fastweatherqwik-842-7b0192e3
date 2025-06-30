@@ -164,9 +164,27 @@ export default component$(() => {
     daily.value = [];
     try {
       const res = await fetch(`${ENDPOINT_BASE}?q=${encodeURIComponent(loc)}`);
-      // Try to robustly handle different error/content types
+      // Check for HTTP errors
       if (!res.ok) {
-        // Try to figure out textual error message from backend/text/html
+        // Try to get JSON with detail
+        const contentType = res.headers.get("content-type") || "";
+        let backendErrDetail = "";
+        // Try best effort: parse {"detail": "..."} or similar JSON if backend sent
+        if (contentType.includes("application/json")) {
+          try {
+            const errorJson = await res.json();
+            if (errorJson.detail) {
+              backendErrDetail = errorJson.detail;
+              throw new Error(backendErrDetail);
+            } else if (typeof errorJson === "string") {
+              backendErrDetail = errorJson;
+              throw new Error(backendErrDetail);
+            }
+          } catch (jsonErr) {
+            // fallback to text below
+          }
+        }
+        // Fallback: Try to parse any short text as a user-facing message
         let text = "";
         try {
           text = await res.text();
@@ -174,13 +192,12 @@ export default component$(() => {
           // ignore
         }
         if (text && !text.startsWith("{") && text.length < 256) {
-          throw new Error(
-            `Backend error: ${text}` // show brief message if it's non-JSON, short text
-          );
+          throw new Error(text.trim());
         }
-        throw new Error("Location not found or backend error.");
+        // Still nothing? Use status text or generic
+        throw new Error(res.statusText || "Location not found or backend error.");
       }
-      // At this point, 'ok' is true. Try to parse as JSON, but guard against non-JSON
+      // At this point, 'ok' is true. Try to parse as JSON, but guard against non-JSON payload
       let data: any = undefined;
       let rawText: string | undefined = undefined;
       try {
@@ -202,6 +219,12 @@ export default component$(() => {
           }
         }
       } catch (err: any) {
+        if (
+          err instanceof TypeError &&
+          (err.message?.includes("NetworkError") || err.message?.includes("Failed to fetch"))
+        ) {
+          throw new Error("Network error: could not reach weather backend.");
+        }
         // Defensive: If backend exploded with HTML, text, or gibberish, surface it
         if (typeof err?.message === "string" && err.message.match(/Unexpected token/i)) {
           throw new Error(
@@ -217,7 +240,9 @@ export default component$(() => {
         typeof data.current.temp !== "number" ||
         typeof data.current.city !== "string"
       ) {
-        throw new Error("Weather data unavailable for this location. Please try another city.");
+        throw new Error(
+          (data && data.detail) ? data.detail : "Weather data unavailable for this location. Please try another city."
+        );
       }
       current.value = {
         temp: Math.round(data.current.temp),
@@ -255,12 +280,21 @@ export default component$(() => {
         recents.value = loadRecents();
       }
     } catch (e: any) {
-      // Handle network and unexpected errors usefully for the user.
+      // Provide robust user-facing error details (network, JSON parse, backend message, etc.)
       if (typeof e === "object" && e && "message" in e) {
-        error.value =
+        if (
+          e.message === "Failed to fetch" ||
+          e.message.includes("NetworkError")
+        ) {
+          error.value = "Network error: could not reach weather backend.";
+        } else if (
           e.message.includes("SSR")
-            ? "The backend server responded with an SSR error. (Not a server-side rendered request). Please check weather backend deployment and URL."
-            : e.message;
+        ) {
+          error.value =
+            "The backend server responded with an SSR error. (Not a server-side rendered request). Please check weather backend deployment and URL.";
+        } else {
+          error.value = e.message;
+        }
       } else if (typeof e === "string") {
         error.value = e;
       } else {
