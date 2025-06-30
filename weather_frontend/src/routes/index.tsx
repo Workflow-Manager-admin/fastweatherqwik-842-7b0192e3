@@ -206,7 +206,12 @@ export default component$(() => {
               }}
               placeholder="Search location…"
               value={query.value}
-              onInput$={e => (query.value = (e.target as HTMLInputElement).value)}
+              // PUBLIC_INTERFACE
+              /** This ensures the user can type freely. */
+              onInput$={(e) => {
+                const val = (e.target as HTMLInputElement).value;
+                query.value = val;
+              }}
               aria-label="Enter city or location"
               disabled={loading.value}
               autoFocus
