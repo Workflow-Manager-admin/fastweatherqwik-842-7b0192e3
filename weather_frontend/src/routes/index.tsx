@@ -152,6 +152,10 @@ export default component$(() => {
   const recents = useSignal<string[]>(typeof window !== "undefined" ? loadRecents() : []);
 
   // PUBLIC_INTERFACE
+  /**
+   * Fetch weather data from the backend and handle all possible response types.
+   * Shows a user-facing error if backend is unreachable, returns non-JSON, or backend returns error HTML, text, or incomplete data.
+   */
   const fetchWeather = $(async (loc: string, addToRecents = true) => {
     loading.value = true;
     error.value = null;
@@ -160,8 +164,61 @@ export default component$(() => {
     daily.value = [];
     try {
       const res = await fetch(`${ENDPOINT_BASE}?q=${encodeURIComponent(loc)}`);
-      if (!res.ok) throw new Error("Location not found or backend error.");
-      const data = await res.json();
+      // Try to robustly handle different error/content types
+      if (!res.ok) {
+        // Try to figure out textual error message from backend/text/html
+        let text = "";
+        try {
+          text = await res.text();
+        } catch {
+          // ignore
+        }
+        if (text && !text.startsWith("{") && text.length < 256) {
+          throw new Error(
+            `Backend error: ${text}` // show brief message if it's non-JSON, short text
+          );
+        }
+        throw new Error("Location not found or backend error.");
+      }
+      // At this point, 'ok' is true. Try to parse as JSON, but guard against non-JSON
+      let data: any = undefined;
+      let rawText: string | undefined = undefined;
+      try {
+        // Peek at the Content-Type in a case-insensitive way, fallback to sniff
+        const ct = res.headers.get("content-type") || "";
+        if (ct.includes("application/json")) {
+          data = await res.json();
+        } else {
+          // Try to parse as json, but if it fails, give a descriptive error.
+          rawText = await res.text();
+          try {
+            data = JSON.parse(rawText);
+          } catch (err) {
+            throw new Error(
+              rawText && rawText.trim().startsWith("Not a SSR")
+                ? "Backend server returned a SSR/HTML error. Please check backend deployment."
+                : "The backend did not return valid weather data (invalid JSON)."
+            );
+          }
+        }
+      } catch (err: any) {
+        // Defensive: If backend exploded with HTML, text, or gibberish, surface it
+        if (typeof err?.message === "string" && err.message.match(/Unexpected token/i)) {
+          throw new Error(
+            "The weather service did not return valid data (bad response format)."
+          );
+        }
+        throw err instanceof Error ? err : new Error("Could not parse weather data from server.");
+      }
+      // Defensive: Ensure the structure is as expected.
+      if (
+        !data ||
+        !data.current ||
+        typeof data.current.temp !== "number" ||
+        typeof data.current.city !== "string"
+      ) {
+        throw new Error("Weather data unavailable for this location. Please try another city.");
+      }
       current.value = {
         temp: Math.round(data.current.temp),
         weather_main: data.current.weather_main,
@@ -174,19 +231,41 @@ export default component$(() => {
         city: data.current.city,
         country: data.current.country
       };
-      hourly.value = (data.hourly || []).slice(0, 6).map((h: any) => ({
-        dt: h.dt, temp: Math.round(h.temp), weather_icon: h.weather_icon, time: h.time, pop: h.pop
-      }));
-      daily.value = (data.daily || []).slice(0, 5).map((d: any) => ({
-        dt: d.dt, temp: Math.round(d.temp), weather_icon: d.weather_icon, date: d.date, pop: d.pop
-      }));
+      hourly.value = Array.isArray(data.hourly)
+        ? data.hourly.slice(0, 6).map((h: any) => ({
+            dt: h.dt,
+            temp: Math.round(h.temp),
+            weather_icon: h.weather_icon,
+            time: h.time,
+            pop: h.pop,
+          }))
+        : [];
+      daily.value = Array.isArray(data.daily)
+        ? data.daily.slice(0, 5).map((d: any) => ({
+            dt: d.dt,
+            temp: Math.round(d.temp),
+            weather_icon: d.weather_icon,
+            date: d.date,
+            pop: d.pop,
+          }))
+        : [];
       // Save recent
       if (addToRecents) {
         saveRecent(data.current.city);
         recents.value = loadRecents();
       }
     } catch (e: any) {
-      error.value = e?.message || "Error fetching weather.";
+      // Handle network and unexpected errors usefully for the user.
+      if (typeof e === "object" && e && "message" in e) {
+        error.value =
+          e.message.includes("SSR")
+            ? "The backend server responded with an SSR error. (Not a server-side rendered request). Please check weather backend deployment and URL."
+            : e.message;
+      } else if (typeof e === "string") {
+        error.value = e;
+      } else {
+        error.value = "Error fetching weather data. Please try again.";
+      }
     } finally {
       loading.value = false;
     }
