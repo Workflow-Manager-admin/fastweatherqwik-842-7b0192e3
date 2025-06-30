@@ -117,28 +117,30 @@ export default component$(() => {
     @media (max-width: 460px) { .chip { font-size: 0.85em; } }
   `);
   // State
-  // --- STATE MGMT PATCH FOR INPUT ---
-  // location holds the currently displayed weather ('New York' by default).
-  // query ONLY tracks the input field text as a pure controlled component.
-  // No function—fetchWeather, chip clicks, errors, search—should update query.value except initial mount or user typing.
+
+  // CONTRACT: location holds the currently displayed/weathered city;
+  // query is *only* the user-typed input (completely controlled input field)
+  // - query.value MAY NOT be directly/indirectly set except for:
+  //   (a) First page mount, if empty (sync to initial location)
+  //   (b) Actual user typing (onInput$ event)
+  // - Prohibited: No effect, chip click, fetch result, or error handler may set/overwrite query.value.
+  //               Do not destructure query or create side effects that "sync" input to backend state.
+  // - Never "mirror" successful search, recents, or chip click event back into query.value!
   const location = useSignal("New York"); // currently shown weather's city
 
   /**
-   * Fully controlled city/location input state for the search box.
-   * 
-   * query.value should ONLY EVER be set by:
-   *   (1) The onInput$ event handler for the input field (user keystrokes)
-   *   (2) Once, on the very first mount (to location.value), if user has not typed
-   * 
-   * Never update query.value from:
-   *   - fetchWeather
-   *   - chip/city selection
-   *   - search submit results
-   *   - any error/loading panel
-   *   - other data changes
-   * 
-   * NEVER set query.value except as above to guarantee user can always type or edit input freely.
-   * NEVER mirror recents/chip result or successful search into query.value.
+   * Pure controlled signal for city/location search input.
+   *
+   * The following contract is rigorously enforced:
+   *   - query.value is changed only:
+   *         (1) On explicit user input (onInput$; direct typing or pasting)
+   *         (2) ONCE, at page load/mount if query.value is empty,
+   *             in which case it's set to location.value. Never again.
+   *   - Prohibited: query.value must NOT be mutated by fetchWeather, chip/city clicks, API responses,
+   *     error reporting, effect hooks, nor any asynchronous update.
+   *   - This contract guarantees user-typed input can never be overwritten or reset without their action.
+   *   - NEVER set, sync, or clear query.value after a chip-click or fetch returns.
+   *   - Input remains always user-editable (no "locked" bug).
    */
   const query = useSignal("");
 
@@ -244,14 +246,14 @@ export default component$(() => {
               gap: 8,
               justifyContent: "center"
             }}
+            // PUBLIC_INTERFACE: The input value is controlled solely by query.value, reflecting only user-typed text or page reload.
             onSubmit$={async (e) => {
               e.preventDefault();
               if (!query.value.trim()) return;
-              // Only fetch weather and set displayed panel. Never alter query.value—input stays as user typed.
+              // Only fetch weather/show result, never mutate or clear query.value!
               await fetchWeather(query.value.trim());
-              location.value = query.value.trim(); // ONLY update displayed city, do not touch query.value
-              // Never clear/reset the input here!
-              // query.value = ""; // <-- Do NOT set or clear! User must always control the value.
+              location.value = query.value.trim(); // Update which city is displayed, do NOT affect input box.
+              // DO NOT: query.value = ...    (Never clear/reset on search result)
             }}
           >
             <input
@@ -270,17 +272,11 @@ export default component$(() => {
               }}
               placeholder="Search location…"
               value={query.value}
-              // PUBLIC_INTERFACE
-              /**
-               * Pure controlled input: query.value is set ONLY by:
-               *  (a) User typing (this onInput$ handler)
-               *  (b) Initial mount, if no user input
-               * Never set by fetches, chip clicks, search, errors, data changes, or elsewhere.
-               * To clear/reset input, user must do it manually (or via explicit navigation).
-               * This guarantees input is never stolen/reset—user can always freely type.
-               */
+              // PUBLIC_INTERFACE: Controlled component. 
+              // Do not bind input value to anything but query.value. 
+              // query.value must NOT be set by fetch or chip, only set below:
               onInput$={(e) => {
-                // Only update when ACTUAL user input occurs.
+                // This is the ONLY ongoing place where query.value is altered (user's direct input).
                 query.value = (e.target as HTMLInputElement).value;
               }}
               aria-label="Enter city or location"
@@ -319,16 +315,17 @@ export default component$(() => {
                     key={city}
                     // PUBLIC_INTERFACE
                     /**
-                     * IMPORTANT: Never update query.value on chip click!
-                     * Only change displayed weather. The user may be typing something different: do not surprise them.
-                     * If you reset query.value here, you will break input UX.
+                     * IMPORTANT:
+                     * Do NOT update query.value in this handler! Only actual user typing should update query.value.
+                     * Chip clicks fetch weather and change visible panel but must NOT alter the input value or
+                     * override user's current input draft.
                      */
                     onClick$={async () => {
                       if (loading.value) return;
-                      // On chip click: fetch, update display, but NEVER modify input or user's typing.
+                      // Fetch and display corresponding weather, do NOT clear/change input box.
                       await fetchWeather(city);
                       location.value = city;
-                      // Never assign to query.value here. This preserves uninterrupted user typing.
+                      // (Do NOT: query.value = city)
                     }}
                     aria-label={`Search ${city}`}
                   >
