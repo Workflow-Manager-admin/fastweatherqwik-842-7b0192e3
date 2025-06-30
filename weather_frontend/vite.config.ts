@@ -54,6 +54,14 @@ export default defineConfig(({ command, mode }): UserConfig => {
       port: 3000,
       host: '0.0.0.0',
       // allowedHosts removed (invalid property)
+      proxy: {
+        '/api/weather': {
+          // Route API requests in dev to backend container, use env for cloud/production
+          target: process.env.WEATHER_BACKEND_URL || 'http://localhost:3001',
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/api\/weather/, '/weather'),
+        }
+      }
     },
     preview: {
       headers: {
