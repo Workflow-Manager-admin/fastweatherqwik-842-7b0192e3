@@ -3,12 +3,12 @@
 > vite --mode ssr --port 3000 --host 0.0.0.0
 
 
-  🚧 Please note that development mode is slower than production.
-
-  VITE v5.3.5  ready in 1731 ms
+  VITE v5.3.5  ready in 1582 ms
 
   ➜  Local:   http://localhost:3000/
   ➜  Network: http://172.17.0.2:3000/
+
+  🚧 Please note that development mode is slower than production.
 QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1> MockElement {
   nodeType: 111,
   _qc_: {
@@ -513,7 +513,5 @@ QWIK WARN State mutation inside render function. Use useTask$() instead. <ref *1
     }
   }
 }
-not SSR rendering http://vscode-internal-703124-beta.beta01.cloud.kavia.ai/api/weather?q=paris because Qwik City Env data did not populate
-not SSR rendering http://vscode-internal-703124-beta.beta01.cloud.kavia.ai/api/weather?q=paris because Qwik City Env data did not populate
-not SSR rendering http://vscode-internal-703124-beta.beta01.cloud.kavia.ai/api/weather?q=paris because Qwik City Env data did not populate
+not SSR rendering http://vscode-internal-703124-beta.beta01.cloud.kavia.ai/api/weather?q=newyork because Qwik City Env data did not populate
 not SSR rendering http://vscode-internal-703124-beta.beta01.cloud.kavia.ai/api/weather?q=New+York because Qwik City Env data did not populate
